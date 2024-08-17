@@ -1,0 +1,41 @@
+
+figcaption {
+  display: none !important;
+}
+
+body {
+    font-family: 'Helvetica', sans-serif !important;
+    background-color: #F5F5F5 !important; 
+    font-size: 18px !important;
+}
+
+
+.title_container {
+    background-color: #1f77b4 !important;
+    border: 0 solid #FFFFFF !important;
+}
+
+
+#title {
+    color: #FFFFFF !important; 
+}
+
+
+.poster_body h1 {
+    background-color: #D9EAFB !important;
+    color: #1f77b4 !important; 
+}
+
+.logo_left {
+    background-color: #FFFFFF !important; 
+}
+
+
+.logo_right {
+    background-color: #FFFFFF !important; 
+}
+
+
+.accent, .box {
+    background-color: #1f77b4 !important; 
+}

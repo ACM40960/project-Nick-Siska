@@ -1,0 +1,446 @@
+---
+title: An Analysis of Depression
+author:
+  - name: Nicolas Siska
+affiliation:
+    address: School of Mathematics and Statistics
+column_numbers: 4
+logoright_name: UCDlogo.png
+logoleft_name: UCDlogo.png
+output: 
+  posterdown::posterdown_html:
+    self_contained: TRUE 
+    css: mytheme.css 
+poster_width: 84.1cm
+poster_height: 118.9cm
+bibliography: packages.bib
+knit: pagedown::chrome_print
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
+# Sourcing all the information from the analysis script
+source("Depression_Analysis_Complete.R")
+```
+
+# Introduction
+
+Depression is defined as a mood disorder that is characterized by persistent feelings of sadness and hopelessness. According to the World Health Organisation, around 280 million people live with depression. It causes severe symptoms that affect how you feel, think, and handle daily activities. Many people who suffer from depression report disrupted sleep, lack of concentration, and thoughts of suicide. The cause of depression is complex and can be due to several psychological, biological, and social factors.
+
+# Objectives
+
+The intent of this study is to analyze what are some main factors that are correlated with depression and whether exercise has a significant effect in treating depression. 
+
+  + Analyzing correlation and association using Pearson’s chi-squared test and Cramer’s V measure.     
+  + Apply statistical machine learning methods to analyze variable importance and significant factors that predict depression.        
+  + Use ANOVA to analyze significant differences in depression scores among different exercise treatments, or use the Kruskal-Wallis H test if the data do not meet the assumptions required for ANOVA.        
+
+# Exploratory Analysis
+
+Two datasets were used in this analysis. The first dataset comes from a study performed in Bangladesh. The second dataset originates from a study with the objective of analyzing the right dosage and modality of exercise treatment for serious depressive disorders.
+
+#### Bangladash Dataset
+
+```{r Response-Depressed, out.width='80%', fig.width=8, echo= FALSE, include=TRUE}
+# Layout of Graphs
+par(mfrow = c(2, 1))
+
+# Bar Plot of response variable
+ggplot(depressed_counts,
+       aes(x = DEPRESSED,
+           y = total,
+           fill = DEPRESSED)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = total),
+            position = position_stack(vjust = 0.5), 
+            size = 3,
+            color = "white") + 
+  labs(title = "Class Count of Depression Variable",
+       x = "Class",
+       y = "Count",
+       fill = "Category") 
+
+
+```
+
+
+```{r Depression-Gender,include=TRUE, echo=FALSE}
+# Creating Pie Charts of Depression based on Gender
+ggplot(gender_dt, aes(x = "",
+                      y= Percentage,
+                      fill = Label)) + 
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = paste(Percentage,"%")), 
+            position = position_stack(vjust = 0.5), 
+            size = 3,
+            color = "white") +
+  labs(title = "Percentage of Depressed ~ Sex",
+       x = NULL,
+       y = NULL,
+       fill = "Depression Status") +
+  theme_void()+
+  facet_wrap(~GENDER, scales = "free")
+```
+
+```{r Chi-Cramer,include=TRUE, echo=FALSE}
+# Heatmap of association
+ggplot(cc_depressed_subset, 
+       aes(x = variable1, 
+           y = variable2, 
+           fill = cramer_V)) +
+  geom_tile() +
+  labs(title = "Heatmap of Cramer's V",
+       x = " ",
+       y = " ",
+       fill =  "Cramer's V Measure") +
+  theme(axis.text.x = element_text(size = 8,
+                                   angle = 45,
+                                   hjust = 1))
+
+```
+
+##### Selected Predictors
+
+```{r Selected-Variables,include=TRUE, echo=FALSE}
+# Transposing the table to wide format
+sv_wide = data.frame(t(display_selected_variables))
+
+# Getting the first row for the column names
+col_names_sv = as.vector(unlist(sv_wide[1,]))
+
+# Replacing column names
+names(sv_wide) = col_names_sv
+
+# Getting rid of the first row which is redundant
+sv_wide = sv_wide[2:3,]
+
+# Displaying the selected variables along with their scores
+kable(sv_wide[1:7],
+      booktabs=TRUE, 
+             format="html") %>%
+  kable_styling(latex_options = "HOLD_position") %>% 
+  kable_styling(font_size = 13) 
+
+```
+
+
+```{r Selected-Variables2,include=TRUE, echo=FALSE}
+# Displaying the selected variables along with their scores
+kable(sv_wide[8:ncol(sv_wide)],
+      booktabs=TRUE, 
+             format="html") %>%
+  kable_styling(latex_options = "HOLD_position") %>% 
+  kable_styling(font_size = 13)
+
+```
+
+#### Exercise and Depression Dataset
+
+```{r Mean_diff-Distribution, out.width='80%', fig.width=8, echo= FALSE, include=TRUE}
+
+# Distribution of mean-difference score
+ggplot(DE, aes(x =mean_diff, fill = "blue")) +
+  geom_density(alpha = 0.3)  +
+  labs(title = "Distributions of Pre-Post Depression Score Differences",
+       x = "Score") +
+  guides(fill = "none")
+
+```
+
+
+
+```{r Baseline-Distribution,include=TRUE, echo=FALSE}
+# Bar chart of baseline severity
+ggplot(baseline_dt, 
+       aes(x = baseline_severity,
+           y = total)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Barchart of Baseline-Severity",
+       x = "Depression Category",
+       y = "Total") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5))
+```
+
+
+```{r Boxplot-Pre-Post-Int,include=TRUE, echo=FALSE}
+# Box plots of difference of means
+ggplot(mean_scores_long, aes(x =Value, fill = Variable)) +
+  geom_boxplot() +
+  labs(title = "Boxplots of Pre/Post-Intervention Depression Scores",
+       x = "Score")
+```
+
+
+```{r Exercise-Treatment,include=TRUE, echo=FALSE}
+# Bar chart of treatment
+ggplot(trt_dt, aes(x = trt,
+                   y = total)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Barchart of Treatment Type",
+       x = "Treatment",
+       y = "Total")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5))
+
+# Bar chart of class treatment
+ggplot(class_dt, aes(x = class,
+                     y = total, 
+                     fill = class)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Barchart of Class Treatment",
+       x = "Class",
+       y = "Total")
+```
+
+
+
+
+# Methodology
+
+In order to predict the response variable of the first dataset, three machine learning models were used: Random Forest, Logistic Regression, and Gradient Boosting. The following process was implemented.   
+▶ **Data Splitting**    
+The dataset was split into sixty-five percent training/validating data and thirty-five percent testing data.       
+▶ **Training Hyperparameter Tuning**     
+Using the caret package the three models were trained on the training set, and the hyperparameters were tuned on the validation set.       
+▶ **Evaluation and Model Selection**   
+The following metrics were used to choose the best model.       
+
+##### Evaluation Metrics
+
+```{r Best-Metrics,include=TRUE, echo=FALSE}
+# Not displaying the following metrics
+best_metrics$`Pos Pred Value` = NULL
+best_metrics$`Neg Pred Value` = NULL
+best_metrics$`Detection Rate` = NULL
+
+# Displaying the results
+knitr::kable(best_metrics,
+             booktabs=TRUE, 
+             format= "html")%>%
+  kable_styling(latex_options = "HOLD_position") %>% 
+  kable_styling(font_size = 12)
+
+```
+
+The model with the best metrics was chosen and then trained again on the training set and evaluated on the test set. Variable importance was assessed to evaluate which predictors were most influential in predicting depression.
+
+▶ **Exercise Evaluation**
+
+In order to evaluate whether exercise had an effect on depression, the non-parametric Kruskal-Wallis test was conducted to see if there was a significant difference in the depression score between the varying treatments.
+
+# Results
+
+The logistic regression model performed the best compared to the other two models. Below are the performance results on the test set.
+
+##### Best Logistic Regression Results
+
+```{r Logistic-Regression-Best-Metrics,include=TRUE, echo=FALSE}
+# Logistic regression model results
+kable(lrm_final_metrics,
+             booktabs=TRUE,
+             format="html") %>%
+  kable_styling(latex_options = "HOLD_position")%>% 
+  kable_styling(font_size = 17)
+
+# Plotting the ROC curve 
+plot(lrm_final_roc,main = "ROC Curve for Final Logistic Regression Model")
+```
+
+
+```{r Variable-Importance ,include=TRUE, echo=FALSE}
+# Variable Importance plot
+ggplot(VI_lrm, aes(x = reorder(var, rel.inf), 
+               y = rel.inf)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(rel.inf, 2)),
+            hjust = -0.1,
+            size = 3) +
+  coord_flip() +
+  labs(title = "Variable Importance Plot",
+       x = "Variable",
+       y = "Relative Influence")
+```
+<p style="font-size: 16px;">
+**ANXI**: Whether a person recently feels anxiety.         
+**POSSAT**: Whether a person is satisfied with their position or academic achievements.       
+**ENVSAT**: Whether the participant is satisfied with their living environment or not.        
+**INFER**: Whether a person suffers from inferiority complex.       
+**DEPRI** : Whether a person feels that they have been deprived of something they deserve.
+</p>
+
+###### Logistic Regression Coefficients
+
+```{r Log-Coef ,include=TRUE, echo=FALSE}
+
+# Getting the top five coefficients according to magnitude
+flrm_coef_dt_sub = flrm_coef_dt[order(-abs(Coefficients))][1:5]
+
+# Transposing the table to wide format
+lrc_wide = data.table(t(flrm_coef_dt_sub))
+
+# Getting the first row for the column names
+col_names_lr = as.vector(unlist(lrc_wide[1,]))
+
+# Replacing column names
+names(lrc_wide) = col_names_lr
+
+# Getting rid of the first row which is redundant
+lrc_wide = lrc_wide[2,]
+
+# Coefficients of the logistic regression
+knitr::kable(lrc_wide,
+             booktabs=TRUE, 
+             format="html")%>%
+  kable_styling(latex_options = "HOLD_position")%>% 
+  kable_styling(font_size = 17) 
+```
+
+### Excersice and Depression Results
+
+```{r Box-TRT-Mean-Diff,include=TRUE, echo=FALSE}
+
+# Expanding swatch colors
+new_swatch_colors2 =c("#111111",
+                      "#65ADC2",
+                      "#233B43",
+                      "#E84646",
+                      "#C29365",
+                      "#362C21",
+                      "#316675",
+                      "#168E7F",
+                      "#109B37",
+                      "#F8766D",
+                      "#B79F00",
+                      "#8A4B8F",
+                      "#FFB347",
+                      "#A1C935", 
+                      "#9D5BB5")
+
+# Setting the new swatch colors
+set_swatch(new_swatch_colors2)
+
+#  Box plot of mean diff for exercise treatment
+ggplot(DE_exercise, aes(y = mean_diff, 
+               x = factor(trt),
+               fill = factor(trt))) +
+  geom_boxplot() +  
+  labs(title = "Boxplots of Pre-Post Depression Score Differences",
+       x = "Exercise Treatment",
+       y = "Depression Score Differences",
+       fill = "Exercise Treatment")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust= 0.5))
+``` 
+
+##### Kruskal-Wallis Test Treatment
+
+```{r Wilcox-TRT,include=TRUE, echo=FALSE}
+# Kruskal Wallis test
+kw_test = kruskal.test(mean_diff ~ trt, data = DE_exercise)
+
+# Creating a data table from results
+kw_display = data.table(
+  Test = "Kruskal-Wallis",
+  Statistic = as.numeric(kw_test$statistic),
+  df = as.numeric(kw_test$parameter),
+  p_value = as.numeric(kw_test$p.value)
+)
+
+# Displaying the results
+knitr::kable(kw_display,
+             booktabs=TRUE, 
+             format="html")%>%
+  kable_styling(latex_options = "HOLD_position") %>% 
+  kable_styling(font_size = 14)
+``` 
+
+
+```{r Class-Boxplot,include=TRUE, echo=FALSE}
+# Box plot of mean difference for Class Treatment
+ggplot(DE, aes(y = mean_diff, 
+               x = factor(class),
+               fill = factor(class))) +
+  geom_boxplot() + 
+  labs(title = "Boxplots of Depression Score Differencese for Class Treatments",
+       x = "Treatment Class",
+       y = "Depression Score Differences",
+       fill = "Treatment Class")
+``` 
+
+##### Pairwise Wilcox Test Treatment Class
+
+```{r Class-Wilcox,include=TRUE, echo=FALSE}
+
+# Pairwise Wilcox Test
+pw_results = pairwise.wilcox.test(DE$mean_diff,
+                     DE$class,
+                     p.adjust.method = "bonferroni")
+
+# Displaying the results
+knitr::kable(pw_results$p.value,
+             booktabs=TRUE, 
+             format="html")%>%
+  kable_styling(latex_options = "HOLD_position") %>% 
+  kable_styling(font_size = 17)
+
+``` 
+
+##### Significant Interactions
+
+```{r Significant-Interactions,include=TRUE, echo=FALSE}
+# Displaying the metric results for gradient boosting
+knitr::kable(significant_interactions,
+             booktabs=TRUE, 
+             format="html")%>%
+  kable_styling(latex_options = "HOLD_position") %>% 
+  kable_styling(font_size = 13)
+``` 
+
+
+```{r Interaction-Plot,include=TRUE, echo=FALSE}
+
+# Plot to check for interactions
+ggplot(DE, aes(x = trt, y = mean_diff, color = baseline_severity)) +
+  geom_point() +
+  geom_smooth(method = "lm", aes(group = baseline_severity)) +
+  labs(title = "Interaction Plot",
+       x = "Treatment",
+       y = "Mean Difference in Depression Scores",
+       color = "Baseline Severity") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))
+
+```
+
+# Challenges
+
+Finding publicly available datasets on depression can be a difficult task. In most cases, the data are collected in such a way as to analyze a specific aspect of depression and not to provide a general overview of the factors of depression.Some expected frequencies in the contingency tables were small, and therefore the p-values from the chi-squared test are not exact but approximations. In the second dataset, there is a significantly high amount of missing values in many columns. The dataset seems to have multiple columns with different types of strings used to symbolize missing values. This had to be addressed, especially in the age column. The column mean_diff did not follow a normal distribution, and therefore a non-parametric test had to be used to test whether there was a significant difference in medians between the treatment and class groups.
+
+# Conclusion
+
+  + The logistic regression model performed the best in predicting depression. The tuned hyperparameters are 
+    + **alpha**: 0.2 (Elastic Net)
+    + **Lambda**: 0.04132012
+  + The final logistic regression model had a balanced accuracy of 0.8387681 a sensitivity score of 0.7500, a specificity score of 0.9275362 and F1 score of 0.7941176.
+  + The top five most influential predictors on the response variable depression are: ANXI, POSSAT, ENVSAT, INFER, and DEPRI.   
+  + The non-parametric Kruskal-Wallis test yielded a p-value of 0.003482, indicating that we can reject the null hypothesis. This suggests there is evidence of a significant difference between the median depression scores across the treatment groups.   
+  + The pairwise comparison shows that there is a significant difference in the depression score for the different classes of treatments and the control group however it does not indicate that there is a significant difference between the treatments themselves.   
+  + A Generalized linear Model was used to examine various treatment effects on the difference between pre and post intervention depression scores. Several treatments demonstrate significant reduction in depression scores.  
+     + **trtAerobic + ECT**: Estimate = -15.26, indicating a substantial decrease in depression severity.        
+     + **trtExercise + SSRI: baseline_severityMild–moderate**: Estimate = -16.66, suggesting a strong reduction in depression scores for individuals with mild to moderate baseline severity.          
+      +**trtStretching: baseline_severityMild–moderate**: Estimate = -10.38, indicating an improvement for individuals with mild to moderate baseline severity.
+      + Treatments such as **trtExercise + SSRI** and **trtStretching** for individuals with baseline severity of mild to moderate show significant negative effects, indicating that they lead to the largest decreases in depression symptoms.
+
+
+# References
+<p style="font-size: 19px;">
+[1] Noetel M, Sanders T, Gallardo-GÃ³mez D, Taylor P, del Pozo Cruz B, van den Hoek D et al. Effect of exercise for depression: systematic review and network meta-analysis of randomised controlled trials BMJ 2024; 384 :e075847 doi:10.1136/bmj-2023-075847
+[2]Md. Sabab Zulfiker, Nasrin Kabir, Al Amin Biswas, Tahmina Nazneen, Mohammad Shorif Uddin,An in-depth analysis of machine learning approaches to predict depression,Current Research in Behavioral Sciences,Volume 2,2021,100044,ISSN 2666-5182,https://doi.org/10.1016/j.crbeha.2021.100044.
+(https://www.sciencedirect.com/science/article/pii/S2666518221000310)
+[3]Belgiu, M., & Drăguţ, L. (2016). Random forest in remote sensing: A review of applications and future directions. ISPRS Journal of Photogrammetry and Remote Sensing, 114, 24-31. https://doi.org/10.1016/j.isprsjprs.2016.01.011
+[4]Natekin, A., & Knoll, A. (2013). Gradient boosting machines, a tutorial. Frontiers in Neurorobotics, 7. https://doi.org/10.3389/fnbot.2013.00021
+[5]Menard, S. (2002).Applied logistic regression analysis(No. 106). Sage.
+[6] Müller, Marlene. (2004). Generalized Linear Models. 10.1007/978-3-642-21551-3_24. 
+</p>
