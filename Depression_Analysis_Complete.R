@@ -52,7 +52,7 @@ missing_val_func = function(col){
 }
 
 # Loading in needed datasets
-DIDA = fread("Depression_In_Depth.csv") 
+DIDA = fread("data/Depression_In_Depth.csv") 
 
 # Dimensions of the dataset
 dim(DIDA)
@@ -69,7 +69,7 @@ depressed_counts$DEPRESSED = factor(depressed_counts$DEPRESSED,
 ggthemr("fresh")
 
 # Displaying class counts
-ggplot(depressed_counts,
+class_count_g = ggplot(depressed_counts,
        aes(x = DEPRESSED,
            y = total,
            fill = DEPRESSED)) +
@@ -82,6 +82,12 @@ ggplot(depressed_counts,
        x = "Class",
        y = "Count",
        fill = "Category") 
+
+# Saving the plot as a PNG in the images folder
+ggsave(filename = "images/class_count_g.png",
+       plot =class_count_g,
+       width = 6,
+       height = 4)
 
 # Getting a subset of all numerical variables
 numerical_DIDA = DIDA[,.SD,.SDcols = sapply(DIDA,is.numeric)] 
@@ -525,10 +531,10 @@ rfm_results = list()
 # }
 # 
 # # Saving as RDS to not run computationally expensive code
-# saveRDS(rfm_results, file = "rfm_results.rds")
+# saveRDS(rfm_results, file = "data/rfm_results.rds")
 
 # Loading the stored results
-rfm_results =readRDS(file = "rfm_results.rds")
+rfm_results =readRDS(file = "data/rfm_results.rds")
 
 # # Training and tuning logistic regression model
 # lrm = train(
@@ -541,10 +547,10 @@ rfm_results =readRDS(file = "rfm_results.rds")
 # )
 # 
 # # # Saving logistic regression results
-# saveRDS(lrm, file = "lrm.rds")
+# saveRDS(lrm, file = "data/lrm.rds")
 
 # Loading the stored results
-lrm =readRDS(file = "lrm.rds")
+lrm =readRDS(file = "data/lrm.rds")
 
 # # Training the gradient boosting model
 # gbm = train(
@@ -558,10 +564,10 @@ lrm =readRDS(file = "lrm.rds")
 # )
 # 
 # # Saving gradient boosting results
-# saveRDS(gbm, file = "gbm.rds")
+# saveRDS(gbm, file = "data/gbm.rds")
 
 # Loading the stored results
-gbm =readRDS(file = "gbm.rds")
+gbm =readRDS(file = "data/gbm.rds")
 
 # Creating a list of best models from RF
 rfm_metrics_list = lapply(seq_along(rfm_results),function(y){
@@ -576,11 +582,11 @@ rfm_metrics_dt = data.table(
   bind_rows(rfm_metrics_list))[,.(mtry, Accuracy,Kappa,model_number)]
 
 # Casting the data to long
-rfm_met_long = melt(rfm_metrics_dt,
+rfm_met_long = suppressWarnings({ melt(rfm_metrics_dt,
                     id.vars = "model_number",
                     measure.vars = c("Accuracy","Kappa"),
                     variable.name = "Metric",
-                    value.name = "Value")
+                    value.name = "Value") })
 
 # Getting the max accuracy and kappa
 max_acc = rfm_met_long[Metric == "Accuracy",.SD[which.max(Value)]]
@@ -612,11 +618,11 @@ lm_df = lrm$results[,3:4]
 lm_df$model_number = 1:nrow(lm_df)
 
 # Casting logistic regression results to long
-lrm_met_long = melt(lm_df,
+lrm_met_long = suppressWarnings({melt(lm_df,
                     id.vars = "model_number",
                     measure.vars = c("Accuracy","Kappa"),
                     variable.name = "Metric",
-                    value.name = "Value")
+                    value.name = "Value")})
 
 # Changing to a data.table
 lrm_met_long = data.table(lrm_met_long)
@@ -657,11 +663,11 @@ gbm_df = gbm$results[,5:6]
 gbm_df$model_number = 1:nrow(gbm_df)
 
 # Casting logistic regression results to long
-gbm_met_long = melt(gbm_df,
+gbm_met_long = suppressWarnings({melt(gbm_df,
                     id.vars = "model_number",
                     measure.vars = c("Accuracy","Kappa"),
                     variable.name = "Metric",
-                    value.name = "Value")
+                    value.name = "Value")})
 
 # Changing to a data.table
 gbm_met_long = data.table(gbm_met_long)
@@ -895,10 +901,10 @@ gbm_grid = expand.grid(
 # )
 # # 
 # # # Saving best gbm
-# saveRDS(final_gbm, file = "final_gbm.rds")
+# saveRDS(final_gbm, file = "data/final_gbm.rds")
 
 # Loading the stored results
-final_gbm =readRDS(file = "final_gbm.rds")
+final_gbm =readRDS(file = "data/final_gbm.rds")
 
 # Setting seed for reproducibility 
 set.seed(89)
@@ -1006,10 +1012,10 @@ rf_hyper_grid2 = expand.grid(
 # )
 
 # # Saving best random forest model
-# saveRDS(brfm, file = "brfm.rds")
+# saveRDS(brfm, file = "data/brfm.rds")
 
 # Loading the stored results
-brfm =readRDS(file = "brfm.rds")
+brfm =readRDS(file = "data/brfm.rds")
 
 # Setting seed for reproducibility 
 set.seed(899)
@@ -1097,7 +1103,7 @@ lrm_grid_best = expand.grid(
 # saveRDS(lrm_final, file = "lrm_final.rds")
 
 # Loading the stored results
-lrm_final =readRDS(file = "lrm_final.rds")
+lrm_final =readRDS(file = "data/lrm_final.rds")
 
 # Getting predictions of the new model
 lrm_final_pred = predict(lrm_final, newdata = test_set2, type = "prob")
@@ -1138,7 +1144,7 @@ VI_lrm = data.table(var = vi_names_lr,
 
 ### Exploratory Analysis
 # Reading in the depression and exercise dataset
-DE = data.table(readRDS("Depression_Exercise.rds"))
+DE = data.table(readRDS("data/Depression_Exercise.rds"))
 
 # Dimensions of the dataset
 dim(DE)
@@ -1181,6 +1187,19 @@ ggplot(missing_dt, aes(x = columns, y = percent_missing)) +
   labs(title = "Missing Values per Column", x = " ", y = "Total") +
   coord_flip()
 
+# Distribution of mean-difference score
+mean_diff_g = ggplot(DE, aes(x =mean_diff, fill = "blue")) +
+  geom_density(alpha = 0.3)  +
+  labs(title = "Distributions of Pre-Post Depression Score Differences",
+       x = "Score") +
+  guides(fill = "none")
+
+# Saving plot to images
+ggsave(filename = "images/mean_diff_g.png",
+       plot =mean_diff_g,
+       width = 6,
+       height = 4)
+
 # Distribution of Baseline severity
 baseline_dt = DE[,.(total = sum(pre_n)),
                  keyby = baseline_severity]
@@ -1208,9 +1227,9 @@ mean_scores_dt = DE[,.(pre_mean,mean)]
 names(mean_scores_dt) = c("Pre-Intervention Mean", "Post-Intervention Mean")
 
 # Casting to long
-mean_scores_long = melt(mean_scores_dt,
+mean_scores_long = suppressWarnings({melt(mean_scores_dt,
                         variable.name = "Variable",
-                        value.name = "Value")
+                        value.name = "Value")})
 
 # Density plot
 ggplot(mean_scores_long, aes(x =Value, fill = Variable)) +
@@ -1225,9 +1244,9 @@ mf_dt = DE[,.(pc_female)]
 mf_dt$pc_male = 100 - mf_dt$pc_female
 
 # Casting to long
-mf_long = melt(mf_dt,
+mf_long = suppressWarnings({melt(mf_dt,
                variable.name = "Variable",
-               value.name = "Value")
+               value.name = "Value")})
 
 # Distribution of Male and Female participants
 ggplot(mf_long, aes(x = Value, fill = Variable)) +
@@ -1251,11 +1270,17 @@ set_swatch(new_swatch_colors)
 DE$pc_male = 100 - DE$pc_female
 
 # Creating a scatter plot of women and pre_mean scores
-ggplot(DE, aes(x = pc_male, y= pre_mean, color = class)) +
+male_dep_g = ggplot(DE, aes(x = pc_male, y= pre_mean, color = class)) +
   geom_point() +
   labs(title = "Male Percentages ~ Pre Intervention Depression Score",
        x = "Male Percentage",
        y = "Depression Score")
+
+# Saving to images folder
+ggsave(filename = "images/male_dep_g.png",
+       plot =male_dep_g,
+       width = 6,
+       height = 4)
 
 # Creating a scatter plot of women and pre_mean scores
 ggplot(DE, aes(x = sessions, y= mean, color = baseline_severity)) +
@@ -1281,13 +1306,19 @@ ggplot(DE, aes(x = daily_dose, y= mean, color = class)) +
        y = "Mean Depression Score")
 
 # Boxplots of post-intervention scores according to depression severity
-ggplot(DE, aes(x = pre_mean, fill = factor(baseline_severity))) +
+mean_pre_drep_g = ggplot(DE, aes(x = pre_mean, fill = factor(baseline_severity))) +
   geom_boxplot() +
   labs(title = "Mean Pre-Intervention Depression Score",
        x = "Depression Severity",
        y = "Mean Depression Score",
        fill = "Depression Severity") +
   coord_flip() 
+
+# Saving to images folder
+ggsave(filename = "images/mean_pre_drep_g.png",
+       plot =mean_pre_drep_g,
+       width = 6,
+       height = 4)
 
 # Boxplots of post-intervention scores according to depression severity
 ggplot(DE, aes(x = mean_diff, fill = factor(baseline_severity))) +
@@ -1299,7 +1330,7 @@ ggplot(DE, aes(x = mean_diff, fill = factor(baseline_severity))) +
   coord_flip() 
 
 # Boxplots of post-intervention scores according to class
-ggplot(DE, aes(y = mean_diff, 
+vio_plot_g = ggplot(DE, aes(y = mean_diff, 
                x = factor(class),
                fill = factor(class))) +
   geom_violin(trim = FALSE) +  # Violin plot
@@ -1313,6 +1344,12 @@ ggplot(DE, aes(y = mean_diff,
        x = "Treatment Class",
        y = "Mean Difference",
        fill = "Treatment Class")
+
+# Saving to images folder
+ggsave(filename = "images/vio_plot_g .png",
+       plot =vio_plot_g ,
+       width = 6,
+       height = 4)
 
 # Getting a subset of the classes that have more than 2 groups
 less_than3 = DE[, .(sample_size = .N), by = trt][sample_size < 3,]$trt
