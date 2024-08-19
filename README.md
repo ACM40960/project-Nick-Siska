@@ -8,7 +8,7 @@ Depression is defined as a mood disorder that is characterised by persistent fee
 </p>
 
 # Purpose 
-This repository contains R code that analysis  two datasets pertaining to depression. The first dataset is was used to analyse which factors are influential in predicting depression and the second dataset was used to analyse the effects of exercise as a treatment for depression. 
+This repository contains R code that analyzes two datasets pertaining to depression. The first dataset was used to analyze which factors are influential in predicting depression, and the second dataset was used to analyze the effects of exercise as a treatment for depression.
 
 <p align="center">
   <img src="images/class_count_g.png" alt="Image 3" width="300"/>
@@ -17,11 +17,11 @@ This repository contains R code that analysis  two datasets pertaining to depres
 
 # Code and File Descriptions
 
-There are two files that contain R programming code for the analysis. The R script called Depression_Analysis_Complete.R is the main file and contains all necessary calculations for the analysis. The second file is an RMD file called  "An Analysis of Depression.Rmd", and contains code to create the pdf for the academic poster. The second file is dependent on the main script Depression_Analysis_Complete.R.
+There are two files that contain R code for the analysis. The R script called Depression_Analysis_Complete.R is the main file and contains all necessary calculations for the analysis. The second file is an R Markdown file called "An Analysis of Depression.Rmd", which contains the code to create the PDF for the academic poster. The second file is dependent on the main script Depression_Analysis_Complete.R.
 
 ### Depression_Analysis_Complete.R
 
-```
+```r
 # Script for analyzing depression
 # Loading packages 
 library(data.table) # Fread and data.table functionality
@@ -53,7 +53,7 @@ apply_chi_cramer = function(pairs,dt){
 
 ### An Analysis of Depression.Rmd
 
-```
+```r
 title: An Analysis of Depression
 author:
   - name: Nicolas Siska
@@ -75,14 +75,14 @@ knit: pagedown::chrome_print
 
 ### Folders
 
- 	+ The folder called "data" contains the two datasets used in the analysis and saved models from the R script  Depression_Analysis_Complete.R.
-	+ The images folder contains plots used in this README file.
-	+ HTML and PDF folder contains the outputs of the "An Analysis of Depression.Rmd" script.
+ 	- The folder called "data" contains the two datasets used in the analysis and saved models from the R script  Depression_Analysis_Complete.R.
+	- The images folder contains plots used in this README file.
+	- HTML and PDF folder contains the outputs of the "An Analysis of Depression.Rmd" script.
 	
 ### CSS and BibTex Files
 
-	+ mythem.css contains css code for the colors and size of the font for the academic poster.
-	+ packages.bib is a bibliography file format used for managing references containing citation entries for various R packages.
+	- mythem.css contains css code for the colors and size of the font for the academic poster.
+	- packages.bib is a bibliography file format used for managing references containing citation entries for various R packages.
  
  
  
