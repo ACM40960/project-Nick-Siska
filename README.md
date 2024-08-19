@@ -75,14 +75,14 @@ knit: pagedown::chrome_print
 
 ### Folders
 
- 	- The folder called "data" contains the two datasets used in the analysis and saved models from the R script  Depression_Analysis_Complete.R.
-	- The images folder contains plots used in this README file.
-	- HTML and PDF folder contains the outputs of the "An Analysis of Depression.Rmd" script.
+* The folder called "data" contains the two datasets used in the analysis and saved models from the R script  Depression_Analysis_Complete.R.
+* The images folder contains plots used in this README file.
+*HTML and PDF folder contains the outputs of the "An Analysis of Depression.Rmd" script.
 	
 ### CSS and BibTex Files
 
-	- mythem.css contains css code for the colors and size of the font for the academic poster.
-	- packages.bib is a bibliography file format used for managing references containing citation entries for various R packages.
+* mythem.css contains css code for the colors and size of the font for the academic poster.
+* packages.bib is a bibliography file format used for managing references containing citation entries for various R packages.
  
  
  
