@@ -1138,6 +1138,24 @@ lrm_VI = varImp(lrm_final, scale = FALSE)$importance
 # Extracting the row names
 vi_names_lr = rownames(lrm_VI)
 
+# Saving variable importance plot to images
+vi_lr_g = ggplot(VI_lrm, aes(x = reorder(var, rel.inf), 
+                   y = rel.inf)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(rel.inf, 2)),
+            hjust = -0.1,
+            size = 3) +
+  coord_flip() +
+  labs(title = "Variable Importance Plot",
+       x = "Variable",
+       y = "Relative Influence")
+
+# Saving plot to images
+ggsave(filename = "images/vi_lr_g.png",
+       plot =vi_lr_g,
+       width = 6,
+       height = 4)
+
 # Creating a data table from the results
 VI_lrm = data.table(var = vi_names_lr,
                    rel.inf = lrm_VI$Overall)
@@ -1399,8 +1417,8 @@ k = length(unique(DE_exercise$trt))
 # Calculating eta squared effect size
 eta_squared = (h-k+1)/(n-k)
 
-# Checking if all mean_diff are negative
-krus_test_class = kruskal.test(mean_diff ~ trt, data = DE_exercise)
+# Applying Test to class
+krus_test_class = kruskal.test(mean_diff ~ class, data = DE)
 krus_test_class
 
 # Multiple comparisons with Wilcox test among class

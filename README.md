@@ -21,6 +21,8 @@ There are two files that contain R code for the analysis. The R script called De
 
 ### Depression_Analysis_Complete.R
 
+*Beginning of Script One*
+
 ```r
 # Script for analyzing depression
 # Loading packages 
@@ -53,6 +55,8 @@ apply_chi_cramer = function(pairs,dt){
 
 ### An Analysis of Depression.Rmd
 
+*Beginning of Script 2*
+
 ```r
 title: An Analysis of Depression
 author:
@@ -84,5 +88,70 @@ knit: pagedown::chrome_print
 * mythem.css contains css code for the colors and size of the font for the academic poster.
 * packages.bib is a bibliography file format used for managing references containing citation entries for various R packages.
  
+ # Methodology of the Analysis
+ In order to predict the response variable of the first dataset, three machine learning models were used: Random Forest, Logistic Regression, and Gradient Boosting. The following process was implemented.
+ > Data Splitting
+ 
+ The dataset was split into sixty-five percent training/validating data and thirty-five percent testing data.
+ 
+ > Training/Hyperparameters Tuning
+ 
+ Using the caret package the three models were trained on the training set, and the hyperparameters were tuned on the validation set.
+ 
+ > Evaluation and Model Selection
+ 
+ The following metrics were used to choose the best model.
+ 
+ <p align="center">
+  <img src="images/evaluation_metrics.png" alt="Evaluation Metrics" width="300"/>
+</p>
+ 
+ 
+In order to evaluate the effects of exercise as a treatment for depression the Kruskal-Wallis H was used to test the differences of the median change in depression scores between the control group and the exercise group. ANOVA was not applicable in this case sense the data did not follow a normal distribution.
+
+
+ # Results of Analysis
+ 
+After a thorough analysis of the first dataset produced by the researches from Bangladesh, the top five most influential predictors on the response variable depression are: ANXI, POSSAT, ENVSAT, INFER, and DEPRI.
+
+<p align="center">
+  <img src="images/vi_lr_g.png" alt="Variable Importance" width="300"/>
+</p>
+
+
+*ANXI*: Whether a person recently feels anxiety.
+*POSSAT*: Whether a person is satisfied with their position or academic achievements.
+*ENVSAT*: Whether the participant is satisfied with their living environment or not.
+*INFER*: Whether a person suffers from inferiority complex.
+*DEPRI* : Whether a person feels that they have been deprived of something they deserve.
+
+These results were based on the coefficients of the Logistic Regression, the Pearson Chi-Squared Test of Independence, and the Cramer's V Measure. 
+
+The logistic regression model performed the best in predicting depression. The tuned hyperparameters are 
+- **alpha**: 0.2 (Elastic Net)
+- **Lambda**: 0.04132012
+- The performance of the Logistic Regression is shown in the metrics table.
+
+<p align="center">
+  <img src="images/metrics_table_lg.png" alt="Metrics for Logistic Regression" width="300"/>
+</p>
+
+For the analysis of the effects of exercise on depression the results showed that there is a significant difference in the change of depression scores between exercise treatment and the control treatment used in the study. This is based on the non-parametric Kruskal-Wallis Test  and the Pairwise Wilcox Test.
+
+#### Pairwise Wilcox Test of Treatment Types
+
+<p align="center">
+  <img src="images/class_boxplot.png" alt="Class Boxplots" width="300"/>
+  <img src="images/PWWT_class.png" alt="Pairwise Wilcox Test" width="300"/>
+</p>
+
+
+ However from the results above there is no evidence to suggest that there is a significant difference in the effect of the exercise treatment compared to the other treatments of medication, therapy, and combined treatment.
+A Generalized linear Model was used to examine various treatment effects on the difference between pre and post intervention depression scores. Several treatments demonstrate significant reduction in depression scores.  
+-  **trtAerobic + ECT**: Estimate = -15.26, indicating a substantial decrease in depression severity.        
+- **trtExercise + SSRI: baseline_severityMild–moderate**: Estimate = -16.66, suggesting a strong reduction in depression scores for individuals with mild to moderate baseline severity.          
+- **trtStretching: baseline_severityMild–moderate**: Estimate = -10.38, indicating an improvement for individuals with mild to moderate baseline severity.
+-  Treatments such as **trtExercise + SSRI** and **trtStretching** for individuals with baseline severity of mild to moderate show significant negative effects, indicating that they lead to the largest decreases in depression symptoms.
+
  
  
