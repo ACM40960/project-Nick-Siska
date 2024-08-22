@@ -119,11 +119,11 @@ After a thorough analysis of the first dataset produced by the researches from B
 </p>
 
 
-*ANXI*: Whether a person recently feels anxiety.   
-*POSSAT*: Whether a person is satisfied with their position or academic achievements.
-*ENVSAT*: Whether the participant is satisfied with their living environment or not.    
-*INFER*: Whether a person suffers from inferiority complex.    
-*DEPRI* : Whether a person feels that they have been deprived of something they deserve.    
+*ANXI*: Whether a person recently feels anxiety.       
+*POSSAT*: Whether a person is satisfied with their position or academic achievements.     
+*ENVSAT*: Whether the participant is satisfied with their living environment or not.       
+*INFER*: Whether a person suffers from inferiority complex.       
+*DEPRI* : Whether a person feels that they have been deprived of something they deserve.       
 
 
 These results were based on the coefficients of the Logistic Regression, the Pearson Chi-Squared Test of Independence, and the Cramer's V Measure. 
