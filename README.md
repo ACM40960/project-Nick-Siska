@@ -110,7 +110,7 @@ knit: pagedown::chrome_print
 In order to evaluate the effects of exercise as a treatment for depression the Kruskal-Wallis H was used to test the differences of the median change in depression scores between the control group and the exercise group. ANOVA was not applicable in this case sense the data did not follow a normal distribution.
 
 
- # Results of Analysis
+ # Results of the Analysis
  
 After a thorough analysis of the first dataset produced by the researches from Bangladesh, the top five most influential predictors on the response variable depression are: ANXI, POSSAT, ENVSAT, INFER, and DEPRI.
 
@@ -139,11 +139,12 @@ The Logistic Regression model performed the best in predicting depression. The t
 
 For the analysis of the effects of exercise on depression the results showed that there is a significant difference in the change of depression scores between exercise treatment and the control treatment used in the study. This is based on the non-parametric Kruskal-Wallis Test  and the Pairwise Wilcox Test.
 
-#### Pairwise Wilcox Test of Treatment Types
 
 <p align="center">
   <img src="images/class_boxplot.png" alt="Class Boxplots" width="600"/>
 </p>
+
+#### Pairwise Wilcox Test of Treatment Types
 
 <p align="center">
   <img src="images/PWWT_class.png" alt="Pairwise Wilcox Test" width="600"/>
