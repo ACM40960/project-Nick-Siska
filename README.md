@@ -103,7 +103,7 @@ knit: pagedown::chrome_print
  The following metrics were used to choose the best model.
  
  <p align="center">
-  <img src="images/evaluation_metrics.png" alt="Evaluation Metrics" width="300"/>
+  <img src="images/evaluation_metrics.png" alt="Evaluation Metrics" width="600"/>
 </p>
  
  
@@ -115,19 +115,20 @@ In order to evaluate the effects of exercise as a treatment for depression the K
 After a thorough analysis of the first dataset produced by the researches from Bangladesh, the top five most influential predictors on the response variable depression are: ANXI, POSSAT, ENVSAT, INFER, and DEPRI.
 
 <p align="center">
-  <img src="images/vi_lr_g.png" alt="Variable Importance" width="300"/>
+  <img src="images/vi_lr_g.png" alt="Variable Importance" width="500"/>
 </p>
 
 
-*ANXI*: Whether a person recently feels anxiety.
+*ANXI*: Whether a person recently feels anxiety.   
 *POSSAT*: Whether a person is satisfied with their position or academic achievements.
-*ENVSAT*: Whether the participant is satisfied with their living environment or not.
-*INFER*: Whether a person suffers from inferiority complex.
-*DEPRI* : Whether a person feels that they have been deprived of something they deserve.
+*ENVSAT*: Whether the participant is satisfied with their living environment or not.    
+*INFER*: Whether a person suffers from inferiority complex.    
+*DEPRI* : Whether a person feels that they have been deprived of something they deserve.    
+
 
 These results were based on the coefficients of the Logistic Regression, the Pearson Chi-Squared Test of Independence, and the Cramer's V Measure. 
 
-The logistic regression model performed the best in predicting depression. The tuned hyperparameters are 
+The Logistic Regression model performed the best in predicting depression. The tuned hyperparameters are 
 - **alpha**: 0.2 (Elastic Net)
 - **Lambda**: 0.04132012
 - The performance of the Logistic Regression is shown in the metrics table.
@@ -141,8 +142,11 @@ For the analysis of the effects of exercise on depression the results showed tha
 #### Pairwise Wilcox Test of Treatment Types
 
 <p align="center">
-  <img src="images/class_boxplot.png" alt="Class Boxplots" width="300"/>
-  <img src="images/PWWT_class.png" alt="Pairwise Wilcox Test" width="300"/>
+  <img src="images/class_boxplot.png" alt="Class Boxplots" width="600"/>
+</p>
+
+<p align="center">
+  <img src="images/PWWT_class.png" alt="Pairwise Wilcox Test" width="600"/>
 </p>
 
 
@@ -152,6 +156,8 @@ A Generalized linear Model was used to examine various treatment effects on the 
 - **trtExercise + SSRI: baseline_severityMild–moderate**: Estimate = -16.66, suggesting a strong reduction in depression scores for individuals with mild to moderate baseline severity.          
 - **trtStretching: baseline_severityMild–moderate**: Estimate = -10.38, indicating an improvement for individuals with mild to moderate baseline severity.
 -  Treatments such as **trtExercise + SSRI** and **trtStretching** for individuals with baseline severity of mild to moderate show significant negative effects, indicating that they lead to the largest decreases in depression symptoms.
+
+
 
  
  
